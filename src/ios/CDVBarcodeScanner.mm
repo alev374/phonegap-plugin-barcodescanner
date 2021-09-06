@@ -38,6 +38,7 @@
 @interface CDVBarcodeScanner : CDVPlugin {}
 - (NSString*)isScanNotPossible;
 - (void)scan:(CDVInvokedUrlCommand*)command;
+- (void)cancel:(CDVInvokedUrlCommand*)command;
 - (void)encode:(CDVInvokedUrlCommand*)command;
 - (void)returnImage:(NSString*)filePath format:(NSString*)format callback:(NSString*)callback;
 - (void)returnSuccess:(NSString*)scannedText format:(NSString*)format cancelled:(BOOL)cancelled flipped:(BOOL)flipped callback:(NSString*)callback;
@@ -119,6 +120,7 @@
 // plugin class
 //------------------------------------------------------------------------------
 @implementation CDVBarcodeScanner
+CDVbcsProcessor* processor;
 
 //--------------------------------------------------------------------------
 - (NSString*)isScanNotPossible {
@@ -153,7 +155,6 @@
 
 //--------------------------------------------------------------------------
 - (void)scan:(CDVInvokedUrlCommand*)command {
-    CDVbcsProcessor* processor;
     NSString*       callback;
     NSString*       capabilityError;
 
@@ -216,6 +217,28 @@
     processor.formats = options[@"formats"];
 
     [processor performSelector:@selector(scanBarcode) withObject:nil afterDelay:0];
+}
+
+//--------------------------------------------------------------------------
+
+- (void)cancel:(CDVInvokedUrlCommand*)command {
+
+    NSString*       callback;
+
+
+    callback = command.callbackId;
+    [processor performSelector:@selector(barcodeScanDone) withObject:nil afterDelay:0];
+
+     if (processor.isFlipped) {
+         processor.isFlipped = NO;
+     }
+
+    CDVPluginResult* result = [CDVPluginResult
+                               resultWithStatus: CDVCommandStatus_OK
+                               messageAsString: @"cancelled"
+                               ];
+    [self.commandDelegate sendPluginResult:result callbackId:callback];
+
 }
 
 //--------------------------------------------------------------------------
