@@ -210,16 +210,9 @@ public class BarcodeScanner extends CordovaPlugin {
     
     public void cancel()
     {
-        if(intentScan!=null)
-        {
-            this.cordova.getActivity().finishActivity(REQUEST_CODE);
-            JSONObject obj = new JSONObject();
-            this.callbackContext.success(obj);
-        }
-        else
-        {
-            this.callbackContext.error("Scanner not running");
-        }
+        this.cordova.getActivity().finishActivity(REQUEST_CODE);   
+        JSONObject obj = new JSONObject();
+        this.callbackContext.success(obj);
             
     }
 
