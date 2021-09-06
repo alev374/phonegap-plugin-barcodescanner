@@ -121,6 +121,8 @@ public class BarcodeScanner extends CordovaPlugin {
             } else {
               scan(args);
             }
+        } else if (action.equals("cancel")) {
+            cancel();
         } else {
             return false;
         }
@@ -204,6 +206,21 @@ public class BarcodeScanner extends CordovaPlugin {
                 that.cordova.startActivityForResult(that, intentScan, REQUEST_CODE);
             }
         });
+    }
+    
+    public void cancel()
+    {
+        if(intentScan!=null)
+        {
+            this.cordova.getActivity().finishActivity(REQUEST_CODE);
+            JSONObject obj = new JSONObject();
+            this.callbackContext.success(obj);
+        }
+        else
+        {
+            this.callbackContext.error("Scanner not running");
+        }
+            
     }
 
     /**
